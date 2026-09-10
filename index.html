@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Links</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+      line-height: 1.5;
+      padding: 2rem 1rem;
+    }
+    main {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 1.75rem;
+      margin-bottom: 0.25rem;
+    }
+    p.subtitle {
+      color: #64748b;
+      margin-bottom: 1.5rem;
+      font-size: 0.95rem;
+    }
+    ul { list-style: none; display: grid; gap: 0.75rem; }
+    li a {
+      display: block;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.75rem;
+      padding: 1rem 1.25rem;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    li a:hover {
+      border-color: #3b82f6;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+    }
+    li a .title {
+      font-weight: 600;
+      color: #2563eb;
+      word-break: break-word;
+    }
+    li a .url {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      word-break: break-all;
+    }
+    li a .desc {
+      font-size: 0.9rem;
+      color: #475569;
+      margin-top: 0.25rem;
+    }
+    #error {
+      display: none;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #b91c1c;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.9rem;
+    }
+    footer {
+      margin-top: 2rem;
+      font-size: 0.8rem;
+      color: #94a3b8;
+      text-align: center;
+    }
+    footer code { background: #e2e8f0; padding: 0.1rem 0.35rem; border-radius: 0.25rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>🔗 Links</h1>
+    <p class="subtitle">My saved links</p>
+    <div id="error"></div>
+    <ul id="list"></ul>
+    <footer>Edit <code>links.json</code> to manage your links.</footer>
+  </main>
+
+  <script>
+    fetch('links.json')
+      .then(res => {
+        if (!res.ok) throw new Error('Could not load links.json (' + res.status + ')');
+        return res.json();
+      })
+      .then(links => {
+        const list = document.getElementById('list');
+        links.forEach(({ title, url, description }) => {
+          const li = document.createElement('li');
+          const a = document.createElement('a');
+          a.href = url;
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          a.innerHTML =
+            '<div class="title"></div>' +
+            '<div class="url"></div>' +
+            (description ? '<div class="desc"></div>' : '');
+          a.querySelector('.title').textContent = title || url;
+          a.querySelector('.url').textContent = url;
+          if (description) a.querySelector('.desc').textContent = description;
+          li.appendChild(a);
+          list.appendChild(li);
+        });
+      })
+      .catch(err => {
+        const el = document.getElementById('error');
+        el.style.display = 'block';
+        el.textContent = err.message + ' — Tip: run via a local server (e.g. `npx serve .`) instead of opening the file directly, otherwise fetch is blocked.';
+      });
+  </script>
+</body>
+</html>
